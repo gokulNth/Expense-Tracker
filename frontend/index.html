@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>AI Expense Tracker</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <script src="https://js.puter.com/v2/"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <div class="brand">
+        <span>💰</span>
+        <span>AI Expense Tracker</span>
+    </div>
+
+    <div class="nav-actions">
+
+        <button
+            class="income-nav-btn"
+            onclick="openIncomeModal()"
+        >
+            Monthly Income:
+            <strong id="navIncome">
+                Not Set
+            </strong>
+            ✏️
+        </button>
+
+        <div class="user-menu">
+
+            <button
+                id="loginBtn"
+                class="login-btn"
+                onclick="loginWithPuter()"
+            >
+                Login with Puter
+            </button>
+
+            <button
+                id="userBtn"
+                class="user-btn hidden"
+                onclick="toggleUserMenu()"
+            >
+                👤
+                <span id="username">
+                    User
+                </span>
+                ▾
+            </button>
+
+            <div
+                id="userDropdown"
+                class="user-dropdown hidden"
+            >
+                <button onclick="logoutFromPuter()">
+                    🚪 Logout
+                </button>
+            </div>
+
+        </div>
+
+        <button
+            class="icon-btn"
+            onclick="toggleDarkMode()"
+        >
+            🌙
+        </button>
+
+    </div>
+
+</nav>
+
+
+<main class="container">
+
+    <!-- DASHBOARD -->
+
+    <section class="dashboard">
+
+        <div class="stat-card">
+
+            <span>
+                Monthly Income
+            </span>
+
+            <strong id="incomeValue">
+                ₹0
+            </strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span>
+                Spending Budget
+            </span>
+
+            <strong id="budgetValue">
+                ₹0
+            </strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span>
+                Spent
+            </span>
+
+            <strong id="spentValue">
+                ₹0
+            </strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span>
+                Remaining
+            </span>
+
+            <strong id="remainingValue">
+                ₹0
+            </strong>
+
+        </div>
+
+    </section>
+
+
+    <!-- BUDGET -->
+
+    <section class="budget-card">
+
+        <div class="section-header">
+
+            <div>
+
+                <h3>
+                    Monthly Budget
+                </h3>
+
+                <span id="budgetText">
+                    Set your monthly income
+                </span>
+
+            </div>
+
+            <strong id="budgetPercentage">
+                0%
+            </strong>
+
+        </div>
+
+        <div class="progress-container">
+
+            <div
+                id="budgetProgress"
+                class="progress-bar"
+            ></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ADD EXPENSE -->
+
+    <section class="expense-card">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Add Expense
+                </h2>
+
+                <p>
+                    Track where your money goes
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="quick-categories">
+
+            <button onclick="selectCategory('Food')">
+                🍔 Food
+            </button>
+
+            <button onclick="selectCategory('Travel')">
+                🚗 Travel
+            </button>
+
+            <button onclick="selectCategory('Shopping')">
+                🛍 Shopping
+            </button>
+
+            <button onclick="selectCategory('Bills')">
+                📄 Bills
+            </button>
+
+            <button onclick="selectCategory('Entertainment')">
+                🎬 Entertainment
+            </button>
+
+            <button onclick="selectCategory('Health')">
+                💊 Health
+            </button>
+
+        </div>
+
+
+        <div class="form-grid">
+
+            <div>
+
+                <label>
+                    Amount
+                </label>
+
+                <input
+                    id="amount"
+                    type="number"
+                    placeholder="₹ Amount"
+                    min="1"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label>
+                    Description
+                </label>
+
+                <input
+                    id="description"
+                    type="text"
+                    placeholder="What did you spend on?"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label>
+                    Category
+                </label>
+
+                <select id="category">
+
+                    <option>
+                        Food
+                    </option>
+
+                    <option>
+                        Travel
+                    </option>
+
+                    <option>
+                        Shopping
+                    </option>
+
+                    <option>
+                        Bills
+                    </option>
+
+                    <option>
+                        Entertainment
+                    </option>
+
+                    <option>
+                        Health
+                    </option>
+
+                    <option selected>
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="cashPurposeContainer"
+            class="cash-purpose hidden"
+        >
+
+            <label>
+                Why was the cash withdrawn?
+            </label>
+
+            <input
+                id="cashPurpose"
+                type="text"
+                placeholder="Example: Grocery shopping"
+            >
+
+        </div>
+
+
+        <button
+            class="add-expense-btn"
+            onclick="addExpense()"
+        >
+            + Add Expense
+        </button>
+
+    </section>
+
+
+    <!-- RECENT EXPENSES -->
+
+    <section class="content-grid">
+
+        <div class="expenses-panel">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>
+                        Recent Expenses
+                    </h2>
+
+                    <p id="expenseCount">
+                        0 expenses
+                    </p>
+
+                </div>
+
+                <input
+                    id="searchInput"
+                    type="search"
+                    placeholder="Search..."
+                    oninput="renderExpenses()"
+                >
+
+            </div>
+
+
+            <div id="expenseList"></div>
+
+        </div>
+
+
+        <div class="chart-panel">
+
+            <h2>
+                Spending Breakdown
+            </h2>
+
+            <canvas id="expenseChart"></canvas>
+
+        </div>
+
+    </section>
+
+
+    <!-- AI INSIGHT -->
+
+    <section class="ai-card">
+
+        <div>
+
+            <h2>
+                🤖 AI Spending Insight
+            </h2>
+
+            <p id="aiInsight">
+                Add some expenses to generate insights.
+            </p>
+
+        </div>
+
+        <button onclick="generateAIInsight()">
+            Generate Insight
+        </button>
+
+    </section>
+
+
+    <!-- CSV -->
+
+    <section class="export-section">
+
+        <button onclick="downloadMonthlyCSV()">
+            ⬇ Download Monthly CSV
+        </button>
+
+    </section>
+
+</main>
+
+
+<!-- INCOME MODAL -->
+
+<div
+    id="incomeModal"
+    class="modal hidden"
+>
+
+    <div class="modal-content">
+
+        <h2>
+            Monthly Income
+        </h2>
+
+        <p>
+            Set the income you expect for this month.
+        </p>
+
+        <input
+            id="incomeInput"
+            type="number"
+            placeholder="₹ Monthly Income"
+        >
+
+        <div class="modal-actions">
+
+            <button onclick="closeIncomeModal()">
+                Cancel
+            </button>
+
+            <button
+                class="primary-btn"
+                onclick="saveMonthlyIncome()"
+            >
+                Save Income
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="app.js"></script>
+
+</body>
+
+</html>
