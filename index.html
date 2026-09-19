@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Expense Tracker</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Puter.js -->
+    <script src="https://js.puter.com/v2/"></script>
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<nav class="navbar">
+
+    <div class="brand">
+        💰
+        <span>AI Expense Tracker</span>
+    </div>
+
+    <div class="nav-actions">
+
+        <!-- Monthly income -->
+        <button id="incomeBtn"
+                class="income-nav-btn"
+                onclick="openIncomeModal()">
+            Monthly Income: <strong id="navIncome">Not Set</strong> ✏️
+        </button>
+
+        <!-- Puter user menu -->
+        <div class="user-menu">
+
+            <button id="loginBtn"
+                    class="login-btn"
+                    onclick="loginWithPuter()">
+                Login with Puter
+            </button>
+
+            <button id="userBtn"
+                    class="user-btn hidden"
+                    onclick="toggleUserMenu()">
+                👤 <span id="username">User</span> ▾
+            </button>
+
+            <div id="userDropdown"
+                 class="user-dropdown hidden">
+
+                <button onclick="logoutFromPuter()">
+                    🚪 Logout
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- Dark mode -->
+        <button id="darkModeBtn"
+                class="icon-btn"
+                onclick="toggleDarkMode()">
+            🌙
+        </button>
+
+    </div>
+
+</nav>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="container">
+
+    <!-- ================= DASHBOARD ================= -->
+
+    <section class="dashboard">
+
+        <div class="stat-card">
+            <span class="stat-label">Monthly Income</span>
+            <strong id="totalIncome">₹0</strong>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">Spending Budget</span>
+            <strong id="budget">₹0</strong>
+        </div>
+
+        <div class="stat-card expense-card">
+            <span class="stat-label">Spent</span>
+            <strong id="totalSpent">₹0</strong>
+        </div>
+
+        <div class="stat-card remaining-card">
+            <span class="stat-label">Remaining</span>
+            <strong id="remaining">₹0</strong>
+        </div>
+
+    </section>
+
+
+    <!-- ================= BUDGET ================= -->
+
+    <section class="card budget-card">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Monthly Spending</h2>
+                <p id="budgetText">
+                    Set your monthly income to calculate your budget.
+                </p>
+            </div>
+
+            <strong id="budgetPercentage">
+                0%
+            </strong>
+
+        </div>
+
+        <div class="progress-container">
+
+            <div id="budgetProgress"
+                 class="progress-bar">
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= ADD EXPENSE ================= -->
+
+    <section class="card add-expense-card">
+
+        <div class="section-header">
+
+            <div>
+                <h2>➕ Add Expense</h2>
+                <p>Track where your money goes.</p>
+            </div>
+
+        </div>
+
+
+        <!-- Quick Categories -->
+
+        <div class="quick-categories">
+
+            <button onclick="selectCategory('Food')">
+                🍔 Food
+            </button>
+
+            <button onclick="selectCategory('Travel')">
+                🚗 Travel
+            </button>
+
+            <button onclick="selectCategory('Shopping')">
+                🛍️ Shopping
+            </button>
+
+            <button onclick="selectCategory('Bills')">
+                💡 Bills
+            </button>
+
+            <button onclick="selectCategory('Entertainment')">
+                🎬 Entertainment
+            </button>
+
+            <button onclick="selectCategory('Health')">
+                💊 Health
+            </button>
+
+        </div>
+
+
+        <div class="expense-form">
+
+            <div class="form-group amount-group">
+
+                <label>Amount</label>
+
+                <input
+                    id="expenseAmount"
+                    type="number"
+                    min="1"
+                    placeholder="₹ 0"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Description</label>
+
+                <input
+                    id="expenseDescription"
+                    type="text"
+                    placeholder="What did you spend on?"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Category</label>
+
+                <select id="expenseCategory">
+
+                    <option value="Auto">🤖 Auto Detect</option>
+                    <option value="Food">🍔 Food</option>
+                    <option value="Travel">🚗 Travel</option>
+                    <option value="Shopping">🛍️ Shopping</option>
+                    <option value="Bills">💡 Bills</option>
+                    <option value="Entertainment">🎬 Entertainment</option>
+                    <option value="Health">💊 Health</option>
+                    <option value="Education">📚 Education</option>
+                    <option value="Home">🏠 Home</option>
+                    <option value="Other">📦 Other</option>
+
+                </select>
+
+            </div>
+
+
+            <button class="primary-btn"
+                    onclick="addExpense()">
+
+                Add Expense
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= EXPENSE SEARCH ================= -->
+
+    <section class="search-section">
+
+        <input
+            id="searchInput"
+            type="text"
+            placeholder="🔍 Search expenses..."
+            oninput="renderExpenses()"
+        >
+
+    </section>
+
+
+    <!-- ================= CONTENT GRID ================= -->
+
+    <section class="content-grid">
+
+
+        <!-- Recent Expenses -->
+
+        <div class="card expenses-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Recent Expenses</h2>
+                    <p>Your latest spending</p>
+                </div>
+
+                <button class="secondary-btn"
+                        onclick="exportCSV()">
+
+                    📥 CSV
+
+                </button>
+
+            </div>
+
+
+            <div id="expenseList"
+                 class="expense-list">
+
+                <div class="empty-state">
+                    No expenses yet.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Spending Breakdown -->
+
+        <div class="card chart-card">
+
+            <h2>Spending Breakdown</h2>
+
+            <p>Where your money is going</p>
+
+            <div class="chart-container">
+
+                <canvas id="expenseChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= AI INSIGHTS ================= -->
+
+    <section class="card ai-card">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>🤖 AI Financial Insight</h2>
+
+                <p>
+                    Let AI analyze your spending habits.
+                </p>
+
+            </div>
+
+            <button class="primary-btn"
+                    onclick="generateAIInsight()">
+
+                Analyze
+
+            </button>
+
+        </div>
+
+
+        <div id="aiInsight"
+             class="ai-result">
+
+            Click <strong>Analyze</strong> to generate
+            your financial insight.
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- ================= INCOME MODAL ================= -->
+
+<div id="incomeModal"
+     class="modal hidden">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Monthly Income</h2>
+                <p>Set the income you receive each month.</p>
+            </div>
+
+            <button class="close-btn"
+                    onclick="closeIncomeModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Monthly Income</label>
+
+            <input
+                id="monthlyIncomeInput"
+                type="number"
+                min="0"
+                placeholder="₹ 40,000"
+            >
+
+        </div>
+
+
+        <div class="income-info">
+
+            <div>
+                <span>Spending Budget</span>
+                <strong id="modalBudget">₹0</strong>
+            </div>
+
+            <div>
+                <span>Target Savings</span>
+                <strong id="modalSavings">₹0</strong>
+            </div>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button class="secondary-btn"
+                    onclick="closeIncomeModal()">
+
+                Cancel
+
+            </button>
+
+            <button class="primary-btn"
+                    onclick="saveMonthlyIncome()">
+
+                Save Income
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>
