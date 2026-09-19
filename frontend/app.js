@@ -3,10 +3,10 @@
 // ============================================================
 
 // LOCAL DEVELOPMENT
-const API_BASE_URL = "http://127.0.0.1:8000";
+// const API_BASE_URL = "http://127.0.0.1:8000";
 
 // AFTER DEPLOYING BACKEND:
-// const API_BASE_URL = "https://your-backend.onrender.com";
+const API_BASE_URL = "https://expense-tracker-89h8.onrender.com";
 
 
 const BUDGET_PERCENTAGE = 0.80;
